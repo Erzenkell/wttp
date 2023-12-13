@@ -1,0 +1,30 @@
+{
+    "size": [5,5],
+    "content": [
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true},
+        {"sprite": "", "isWall": false, "isBreakable": true}
+    ]
+}
