@@ -3,6 +3,7 @@ import {generateMap} from "../utils/generateMap";
 import { loadAssets } from "../utils/loadAssets";
 import { keyHandler } from "../utils/keyHandler";
 import { updateCharSpritePosition } from "../utils/characterMovement";
+import { attackButton } from "../utils/characterActions";
 import './Gamu.css'
 
 const Gamu = (props) => {
@@ -25,9 +26,11 @@ const Gamu = (props) => {
     }, []);
 
     //character
-    let frame = 0; //frame du sprite
-    const factor = 6; //vitesse de l'animation
-    const speed = 3; //vitesse de déplacement
+    let frame = 0; //sprite frame
+    const factor = 6; //anim speed
+    const speed = 3; //movement speed
+    let hasAttacked = false;
+
     let charPosition = {
         X: 0,
         Y: 0
@@ -35,7 +38,9 @@ const Gamu = (props) => {
 
     const loadCharFrame = (frame, context, canvas) => {
         let char = assets.character[frame - 1];
-        charPosition = updateCharSpritePosition(char, keyCheck, charPosition, speed, canvas);
+        if (hasAttacked === false) {
+            charPosition = updateCharSpritePosition(char, keyCheck, charPosition, speed, canvas);
+        }
         let aspectRatio = char.width / char.height;
         let height = 100;
         let width = height * aspectRatio;
@@ -51,10 +56,12 @@ const Gamu = (props) => {
     //keyPress
     var keyCheck = {
         pressed: false,
+        movement: false,
         up: false,
         down: false,
         left: false,
-        right: false
+        right: false,
+        space: false,
     }
     
     useEffect(() => {
@@ -71,8 +78,23 @@ const Gamu = (props) => {
             context.clearRect(0, 0, canvas.width, canvas.height);
             //context.drawImage(map, 0, 0, 800, 600);
             if(keyCheck.pressed === true) {
-                animateChar(context, canvas);
-            }   
+                if(keyCheck.movement === true && hasAttacked === false) {
+                    animateChar(context, canvas);
+                } 
+                else {
+                    loadCharFrame(1, context, canvas);
+                }  
+                if (keyCheck.space === true) {
+                    loadCharFrame(10, context, canvas);
+                    if (hasAttacked === false) {
+                        hasAttacked = true;
+                        attackButton(charPosition, assets, context)
+                        setTimeout(() => {
+                            hasAttacked = false;
+                        }, 1000);
+                    }    
+                }
+            }
             else {
                 loadCharFrame(1, context, canvas);
             }

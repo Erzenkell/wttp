@@ -26,7 +26,9 @@ const importImages = async (type, path) => {
 export const loadAssets = async () => {
     const path = '/src/assets/sprite';
     const Assets = {};
-    const characterImages = await importImages('character', path);
-    Assets.character = characterImages;
+    const characterSprites = await importImages('character', path);
+    const swordSprites = await importImages('sword', path);
+    Assets.character = characterSprites;
+    Assets.sword = swordSprites;
     return Assets;
 }
