@@ -33,18 +33,39 @@ const Gamu = (props) => {
 
     let charPosition = {
         X: 0,
-        Y: 0
+        Y: 0,
+        direction: 0,
     }
 
     const loadCharFrame = (frame, context, canvas) => {
-        let char = assets.character[frame - 1];
+        const char = assets.character[frame - 1];
         if (hasAttacked === false) {
             charPosition = updateCharSpritePosition(char, keyCheck, charPosition, speed, canvas);
         }
-        let aspectRatio = char.width / char.height;
-        let height = 100;
-        let width = height * aspectRatio;
-        context.drawImage(char, charPosition.X, charPosition.Y, width, height);
+        const aspectRatio = char.width / char.height;
+        const height = 100;
+        const width = height * aspectRatio;
+        
+        // Save the current canvas state
+        context.save();
+
+        // Translate to the center of the image
+        context.translate(charPosition.X + width / 2, charPosition.Y + height / 2);
+
+        if (keyCheck.left) {
+            context.scale(-1, 1); // Mirror effect along the x-axis
+        }
+        else {
+            context.rotate((Math.PI / 180) * charPosition.direction);
+        }        
+
+        // Draw the rotated image
+        context.drawImage(char, -width / 2, -height / 2, width, height);
+
+        // Restore the canvas state
+        context.restore();
+
+        //context.drawImage(char, charPosition.X, charPosition.Y, width, height);
     }
 
     const animateChar = (context, canvas) => {
