@@ -27,9 +27,10 @@ const Gamu = (props) => {
 
     //character
     let frame = 0; //sprite frame
+    let attackFrame = 0; //attack frame
     const factor = 6; //anim speed
     const speed = 3; //movement speed
-    let hasAttacked = false;
+    let isAttacking = false;
 
     let charPosition = {
         X: 0,
@@ -45,7 +46,7 @@ const Gamu = (props) => {
                 break;
             }
         }
-        if (hasAttacked === false) {
+        if (isAttacking === false) {
             charPosition = updateCharSpritePosition(char, keyCheck, charPosition, speed, canvas);
         }
         const aspectRatio = char.width / char.height;
@@ -56,7 +57,6 @@ const Gamu = (props) => {
 
     const animateChar = (context, canvas) => {
         frame = (frame + 1) % (7 * factor);
-        console.log(frame)
         const charFrame = Math.floor(frame / factor) + 1;
         loadCharFrame('walk-'+charFrame, context, canvas);
     }
@@ -83,28 +83,33 @@ const Gamu = (props) => {
             canvas.width = 800;
             canvas.height = 600;
             const context = canvas.getContext('2d');
-            context.clearRect(0, 0, canvas.width, canvas.height);
+            // context.clearRect(0, 0, canvas.width, canvas.height);
             //context.drawImage(map, 0, 0, 800, 600);
             if(keyCheck.pressed === true) {
-                if(keyCheck.movement === true && hasAttacked === false) {
+                if(keyCheck.movement === true && isAttacking === false) {
                     animateChar(context, canvas);
                 } 
                 else {
                     loadCharFrame('idle', context, canvas);
                 }  
                 if (keyCheck.space === true) {
-                    loadCharFrame('idle', context, canvas);
-                    if (hasAttacked === false) {
-                        hasAttacked = true;
-                        attackButton(charPosition, assets, context)
+                    if (isAttacking === false) {
+                        isAttacking = true;
                         setTimeout(() => {
-                            hasAttacked = false;
-                        }, 1000);
+                            isAttacking = false;
+                        }, 500);
                     }    
                 }
             }
-            else {
+            else {       
                 loadCharFrame('idle', context, canvas);
+            }
+            if (isAttacking === true) {
+                if (attackFrame > 30) {
+                    attackFrame = 0;
+                }
+                attackButton(charPosition, assets, context, attackFrame);
+                attackFrame ++;
             }
         }
         requestAnimationFrame(play);
