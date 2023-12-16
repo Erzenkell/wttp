@@ -34,44 +34,31 @@ const Gamu = (props) => {
     let charPosition = {
         X: 0,
         Y: 0,
-        direction: 0,
+        direction: 'right',
     }
 
     const loadCharFrame = (frame, context, canvas) => {
-        const char = assets.character[frame - 1];
+        let char = null;
+        for(let i=0; i<assets.hero.length; i++) {
+            if (assets.hero[i].src === `http://localhost:5173/src/assets/sprite/character/link/${charPosition.direction}-${frame}.png`) {
+                char = assets.hero[i];
+                break;
+            }
+        }
         if (hasAttacked === false) {
             charPosition = updateCharSpritePosition(char, keyCheck, charPosition, speed, canvas);
         }
         const aspectRatio = char.width / char.height;
         const height = 100;
         const width = height * aspectRatio;
-        
-        // Save the current canvas state
-        context.save();
-
-        // Translate to the center of the image
-        context.translate(charPosition.X + width / 2, charPosition.Y + height / 2);
-
-        if (keyCheck.left) {
-            context.scale(-1, 1); // Mirror effect along the x-axis
-        }
-        else {
-            context.rotate((Math.PI / 180) * charPosition.direction);
-        }        
-
-        // Draw the rotated image
-        context.drawImage(char, -width / 2, -height / 2, width, height);
-
-        // Restore the canvas state
-        context.restore();
-
-        //context.drawImage(char, charPosition.X, charPosition.Y, width, height);
+        context.drawImage(char, charPosition.X, charPosition.Y, width, height);
     }
 
     const animateChar = (context, canvas) => {
-        frame = (frame + 1) % (9 * factor);
+        frame = (frame + 1) % (7 * factor);
+        console.log(frame)
         const charFrame = Math.floor(frame / factor) + 1;
-        loadCharFrame(charFrame, context, canvas);
+        loadCharFrame('walk-'+charFrame, context, canvas);
     }
 
     //keyPress
@@ -103,10 +90,10 @@ const Gamu = (props) => {
                     animateChar(context, canvas);
                 } 
                 else {
-                    loadCharFrame(1, context, canvas);
+                    loadCharFrame('idle', context, canvas);
                 }  
                 if (keyCheck.space === true) {
-                    loadCharFrame(10, context, canvas);
+                    loadCharFrame('idle', context, canvas);
                     if (hasAttacked === false) {
                         hasAttacked = true;
                         attackButton(charPosition, assets, context)
@@ -117,7 +104,7 @@ const Gamu = (props) => {
                 }
             }
             else {
-                loadCharFrame(1, context, canvas);
+                loadCharFrame('idle', context, canvas);
             }
         }
         requestAnimationFrame(play);

@@ -1,5 +1,5 @@
-const importImages = async (type, path) => {
-    const charResponse = await fetch(`${path}/${type}/${type}.json`);
+const importImages = async (type, spe, path) => {
+    const charResponse = await fetch(`${path}/${type}/${spe}.json`);
     const charFileNames = await charResponse.json();
 
     const charImagePromises = charFileNames.map(async (fileName) => {
@@ -26,9 +26,9 @@ const importImages = async (type, path) => {
 export const loadAssets = async () => {
     const path = '/src/assets/sprite';
     const Assets = {};
-    const characterSprites = await importImages('character', path);
-    const swordSprites = await importImages('sword', path);
-    Assets.character = characterSprites;
+    const characterSprites = await importImages('character/link', 'link', path);
+    const swordSprites = await importImages('sword', 'sword', path);
+    Assets.hero = characterSprites;
     Assets.sword = swordSprites;
     return Assets;
 }
