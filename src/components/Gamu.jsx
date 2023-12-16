@@ -29,7 +29,7 @@ const Gamu = (props) => {
     let frame = 0; //sprite frame
     let attackFrame = 0; //attack frame
     const factor = 6; //anim speed
-    const speed = 3; //movement speed
+    const speed = 5; //movement speed
     let isAttacking = false;
 
     let charPosition = {
@@ -95,6 +95,7 @@ const Gamu = (props) => {
                 if (keyCheck.space === true) {
                     if (isAttacking === false) {
                         isAttacking = true;
+                        attackFrame = 0;
                         setTimeout(() => {
                             isAttacking = false;
                         }, 500);
@@ -108,8 +109,8 @@ const Gamu = (props) => {
                 if (attackFrame > 30) {
                     attackFrame = 0;
                 }
-                attackButton(charPosition, assets, context, attackFrame);
                 attackFrame ++;
+                attackButton(charPosition, assets, context, attackFrame);
             }
         }
         requestAnimationFrame(play);
