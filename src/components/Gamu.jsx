@@ -4,12 +4,21 @@ import { loadAssets } from "../utils/loadAssets";
 import { keyHandler } from "../utils/keyHandler";
 import { updateCharSpritePosition } from "../utils/characterMovement";
 import { attackButton } from "../utils/characterActions";
+import { drawMap } from "../utils/drawMap";
 import './Gamu.css'
 
 const Gamu = (props) => {
 
     //canvas
     const canvasRef = useRef(null);
+
+    //global
+    const [global, setGlobal] = useState({
+        scale: 2,
+        width: 800,
+        height: 600,
+        tileSize: 8,
+    });
 
     //map
     const map = generateMap();
@@ -41,7 +50,8 @@ const Gamu = (props) => {
     const loadCharFrame = (frame, context, canvas) => {
         let char = null;
         for(let i=0; i<assets.hero.length; i++) {
-            if (assets.hero[i].src === `http://localhost:5173/src/assets/sprite/character/link/${charPosition.direction}-${frame}.png`) {
+            // Check if the end of the string matches the target ending
+            if (assets.hero[i].src.endsWith(`${charPosition.direction}-${frame}.png`)) {
                 char = assets.hero[i];
                 break;
             }
@@ -49,9 +59,8 @@ const Gamu = (props) => {
         if (isAttacking === false) {
             charPosition = updateCharSpritePosition(char, keyCheck, charPosition, speed, canvas);
         }
-        const aspectRatio = char.width / char.height;
-        const height = 100;
-        const width = height * aspectRatio;
+        const height = char.height * global.scale;
+        const width = char.width * global.scale;
         context.drawImage(char, charPosition.X, charPosition.Y, width, height);
     }
 
@@ -80,11 +89,11 @@ const Gamu = (props) => {
     const play = () => {
         if (assetsLoaded) {
             const canvas = canvasRef.current;
-            canvas.width = 800;
-            canvas.height = 600;
+            canvas.width = global.width;
+            canvas.height = global.height;
             const context = canvas.getContext('2d');
-            // context.clearRect(0, 0, canvas.width, canvas.height);
-            //context.drawImage(map, 0, 0, 800, 600);
+            //context.clearRect(0, 0, canvas.width, canvas.height);
+            drawMap(map, context, assets, global);
             if(keyCheck.pressed === true) {
                 if(keyCheck.movement === true && isAttacking === false) {
                     animateChar(context, canvas);
@@ -110,7 +119,7 @@ const Gamu = (props) => {
                     attackFrame = 0;
                 }
                 attackFrame ++;
-                attackButton(charPosition, assets, context, attackFrame);
+                attackButton(charPosition, assets, context, attackFrame, global);
             }
         }
         requestAnimationFrame(play);
