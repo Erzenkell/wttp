@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {generateMap} from "../utils/generateMap";
+import {generateMap, generateRandomMap} from "../utils/generateMap";
 import { loadAssets } from "../utils/loadAssets";
 import { keyHandler } from "../utils/keyHandler";
 import { updateCharSpritePosition } from "../utils/characterMovement";
@@ -17,11 +17,14 @@ const Gamu = (props) => {
         scale: 2,
         width: 800,
         height: 600,
-        tileSize: 8,
+        tileSize: 16,
     });
 
     //map
-    const map = generateMap();
+    const [map, setMap] = useState(null);
+    useEffect(() => {
+        setMap(generateRandomMap(global))
+    }, [global]);
 
     //assets
     const [assetsLoaded, setAssetsLoaded] = useState(false);
@@ -42,8 +45,10 @@ const Gamu = (props) => {
     let isAttacking = false;
 
     let charPosition = {
-        X: 0,
-        Y: 0,
+        X: assetsLoaded ? global.width / 2 - assets.hero[0].width * global.scale / 2 : 0,
+        Y: assetsLoaded ? global.height / 2 - assets.hero[0].height * global.scale / 2 : 0,
+        mapX: 800,
+        mapY: 800,
         direction: 'right',
     }
 
@@ -56,8 +61,8 @@ const Gamu = (props) => {
                 break;
             }
         }
-        if (isAttacking === false) {
-            charPosition = updateCharSpritePosition(char, keyCheck, charPosition, speed, canvas);
+        if (isAttacking === false && keyCheck.movement === true) {
+            charPosition = updateCharSpritePosition(char, keyCheck, charPosition, speed, canvas, map.size);
         }
         const height = char.height * global.scale;
         const width = char.width * global.scale;
@@ -93,7 +98,7 @@ const Gamu = (props) => {
             canvas.height = global.height;
             const context = canvas.getContext('2d');
             //context.clearRect(0, 0, canvas.width, canvas.height);
-            drawMap(map, context, assets, global);
+            drawMap(map, context, assets, charPosition, global);
             if(keyCheck.pressed === true) {
                 if(keyCheck.movement === true && isAttacking === false) {
                     animateChar(context, canvas);

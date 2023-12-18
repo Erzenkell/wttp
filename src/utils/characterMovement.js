@@ -1,52 +1,50 @@
-export const updateCharSpritePosition = (src, keyCheck, charPosition, speed, canvas) => {
-    if (keyCheck.up == true){ //haut
-        charPosition.direction = 'up';
-        if (keyCheck.left == true){ //haut gauche
-            
-            if (charPosition.X - speed >= 0) charPosition.X -= speed;
-            if (charPosition.Y - speed >= 0) charPosition.Y -= speed;
+export const updateCharSpritePosition = (src, keyCheck, charPosition, speed, canvas, mapSize) => {
+    const isWithinBoundsX = (x) => x >= 0 && x <= canvas.width - src.width;
+    const isWithinBoundsY = (y) => y >= 0 && y <= canvas.height - src.height;
+
+    const updatePosition = (deltaX, deltaY) => {
+        if (isWithinBoundsX(charPosition.X + deltaX) && isWithinBoundsY(charPosition.Y + deltaY)) {
+            charPosition.mapX += deltaX;
+            charPosition.mapY += deltaY;
         }
-        else if (keyCheck.right == true){ //haut droite
-            if (charPosition.X + speed <= canvas.width - src.width) charPosition.X += speed;
-            if (charPosition.Y - speed >= 0) charPosition.Y -= speed;
-        }
-        else if (charPosition.Y - speed >= 0) charPosition.Y -= speed;
+    };
+
+    switch (true) {
+        case keyCheck.up && keyCheck.left: // haut gauche
+            updatePosition(-speed, -speed);
+            break;
+        case keyCheck.up && keyCheck.right: // haut droite
+            updatePosition(speed, -speed);
+            break;
+        case keyCheck.down && keyCheck.left: // bas gauche
+            updatePosition(-speed, speed);
+            break;
+        case keyCheck.down && keyCheck.right: // bas droite
+            updatePosition(speed, speed);
+            break;
+        case keyCheck.up: // haut
+            updatePosition(0, -speed);
+            break;
+        case keyCheck.down: // bas
+            updatePosition(0, speed);
+            break;
+        case keyCheck.left: // gauche
+            updatePosition(-speed, 0);
+            break;
+        case keyCheck.right: // droite
+            updatePosition(speed, 0);
+            break;
     }
-    else if (keyCheck.down == true){ //bas
-        charPosition.direction = 'down';
-        if (keyCheck.left == true){ //bas gauche
-            if (charPosition.X - speed >= 0) charPosition.X -= speed;
-            if (charPosition.Y +speed <= canvas.height - src.height) charPosition.Y += speed;
-        }
-        else if (keyCheck.right == true){ //bas droite
-            if (charPosition.X + speed <= canvas.width - src.width) charPosition.X += speed;
-            if (charPosition.Y +speed <= canvas.height - src.height) charPosition.Y += speed;
-        }
-        else if (charPosition.Y +speed <= canvas.height - src.height) charPosition.Y += speed; 
-    } 
-    else if (keyCheck.left == true){ //gauche
-        charPosition.direction = 'left';
-        if (keyCheck.up == true){ //haut gauche
-            if (charPosition.Y - speed >= 0) charPosition.Y -= speed;
-            if (charPosition.X - speed >= 0) charPosition.X -= speed;
-        }
-        else if (keyCheck.down == true){ // bas gauche
-            if (charPosition.Y +speed <= canvas.height - src.height) charPosition.Y += speed
-            if (charPosition.X - speed >= 0) charPosition.X -= speed;
-        }
-        else if (charPosition.X - speed >= 0) charPosition.X -= speed;
-    } 
-    else if (keyCheck.right == true){ //droite
-        charPosition.direction = 'right';
-        if (keyCheck.up == true){ // droite haut
-            if (charPosition.Y - speed >= 0) charPosition.Y -= speed;
-            if (charPosition.X + speed <= canvas.width - src.width) charPosition.X += speed;
-        }
-        else if (keyCheck.down == true){ // droite bas
-            if (charPosition.Y +speed <= canvas.height - src.height) charPosition.Y += speed;
-            if (charPosition.X + speed <= canvas.width - src.width) charPosition.X += speed;
-        }
-        else if (charPosition.X + speed <= canvas.width - src.width) charPosition.X += speed;       
-    }
+
+    charPosition.direction = keyCheck.up
+        ? 'up'
+        : keyCheck.down
+        ? 'down'
+        : keyCheck.left
+        ? 'left'
+        : keyCheck.right
+        ? 'right'
+        : charPosition.direction;
+
     return charPosition;
-}
+};
