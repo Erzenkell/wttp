@@ -1,11 +1,24 @@
-export const updateCharSpritePosition = (src, keyCheck, charPosition, speed, canvas, mapSize) => {
-    const isWithinBoundsX = (x) => x >= 0 && x <= canvas.width - src.width;
-    const isWithinBoundsY = (y) => y >= 0 && y <= canvas.height - src.height;
+export const updateCharSpritePosition = (src, keyCheck, charPosition, speed, canvas, global, map) => {
+    const isWithinBoundsX = (x) => x >= 0 && x <= map.size[0] * global.tileSize - src.width;
+    const isWithinBoundsY = (y) => y >= 0 && y <= map.size[1] * global.tileSize - src.height;
+
+    const closestTile = (x, y) => {
+        const tileX = Math.floor(x / (global.tileSize * 2));
+        const tileY = Math.floor(y / (global.tileSize * 2));
+        return [tileX+1, tileY-1];
+    };
+
+    const isWall = (x, y) => {
+        const [tileX, tileY] = closestTile(x, y);
+        return map.size[0] > tileX && tileX >= 0 && map.size[1] > tileY && tileY >= 0 && map.content[tileY][tileX].isWall;
+    };
 
     const updatePosition = (deltaX, deltaY) => {
-        if (isWithinBoundsX(charPosition.X + deltaX) && isWithinBoundsY(charPosition.Y + deltaY)) {
-            charPosition.mapX += deltaX;
-            charPosition.mapY += deltaY;
+        if (isWithinBoundsX(charPosition.mapX + deltaX) && isWithinBoundsY(charPosition.mapY + deltaY)) {
+            if (!isWall(charPosition.mapX + deltaX, charPosition.mapY + deltaY)) {
+                charPosition.mapX += global.tileSize * deltaX;
+                charPosition.mapY += global.tileSize * deltaY;
+            }
         }
     };
 

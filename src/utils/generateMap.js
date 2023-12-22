@@ -16,8 +16,21 @@ export const generateRandomMap = (global) => {
     const map = { size: [2000, 2000], content: [] };
     for (let i = 0; i < map.size[0]; i++) {
         const row = [];
-        for (let j = 0; j < map.size[1]; j++) {
-            row.push({"sprite": `world-grass-${Math.floor(Math.random() * (3 - 1) + 1)}`, "isWall": false, "isBreakable": false},);
+        if(i<20 || i>map.size[0]-20) {
+            for (let j = 0; j < map.size[1]; j++) {
+                row.push({"sprite": `world-wall-1`, "isWall": true, "isBreakable": false},);
+            }
+        }
+        else {
+            for (let j = 0; j < map.size[1]; j++) {
+                if(j<=20) {
+                    row.push({"sprite": `world-wall-1`, "isWall": true, "isBreakable": false},);
+                }
+                else if (j>=map.size[1]-20) {
+                    row.push({"sprite": `world-wall-1`, "isWall": true, "isBreakable": false},);
+                }
+                else row.push({"sprite": `world-grass-${Math.floor(Math.random() * (3 - 1) + 1)}`, "isWall": false, "isBreakable": false},);
+            }
         }
         map.content.push(row);
     }

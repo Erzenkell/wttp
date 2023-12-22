@@ -41,7 +41,7 @@ const Gamu = (props) => {
     let frame = 0; //sprite frame
     let attackFrame = 0; //attack frame
     const factor = 6; //anim speed
-    const speed = 5; //movement speed
+    const speed = 1; //movement speed
     let isAttacking = false;
 
     let charPosition = {
@@ -62,7 +62,7 @@ const Gamu = (props) => {
             }
         }
         if (isAttacking === false && keyCheck.movement === true) {
-            charPosition = updateCharSpritePosition(char, keyCheck, charPosition, speed, canvas, map.size);
+            charPosition = updateCharSpritePosition(char, keyCheck, charPosition, speed, canvas, global, map);
         }
         const height = char.height * global.scale;
         const width = char.width * global.scale;
