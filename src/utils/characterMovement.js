@@ -1,11 +1,14 @@
 export const updateCharSpritePosition = (src, keyCheck, charPosition, speed, canvas, global, map) => {
-    const isWithinBoundsX = (x) => x >= 0 && x <= map.size[0] * global.tileSize - src.width;
-    const isWithinBoundsY = (y) => y >= 0 && y <= map.size[1] * global.tileSize - src.height;
+    const isWithinBoundsX = (x) => x >= 0 && x <= map.size[0] * global.scale * global.tileSize - src.width;
+    const isWithinBoundsY = (y) => y >= 0 && y <= map.size[1] * global.scale * global.tileSize - src.height;
 
     const closestTile = (x, y) => {
+        const direction = charPosition.direction;
         const tileX = Math.floor(x / (global.tileSize * 2));
         const tileY = Math.floor(y / (global.tileSize * 2));
-        return [tileX+1, tileY-1];
+        const directionX = direction === 'left' ? 1 : direction === 'right' ? 1 : 0;
+        const directionY = direction === 'up' ? -1 : direction === 'down' ? 1 : 0;
+        return [tileX+directionX, tileY+directionY];
     };
 
     const isWall = (x, y) => {
@@ -23,18 +26,18 @@ export const updateCharSpritePosition = (src, keyCheck, charPosition, speed, can
     };
 
     switch (true) {
-        case keyCheck.up && keyCheck.left: // haut gauche
-            updatePosition(-speed, -speed);
-            break;
-        case keyCheck.up && keyCheck.right: // haut droite
-            updatePosition(speed, -speed);
-            break;
-        case keyCheck.down && keyCheck.left: // bas gauche
-            updatePosition(-speed, speed);
-            break;
-        case keyCheck.down && keyCheck.right: // bas droite
-            updatePosition(speed, speed);
-            break;
+        // case keyCheck.up && keyCheck.left: // haut gauche
+        //     updatePosition(-speed, -speed);
+        //     break;
+        // case keyCheck.up && keyCheck.right: // haut droite
+        //     updatePosition(speed, -speed);
+        //     break;
+        // case keyCheck.down && keyCheck.left: // bas gauche
+        //     updatePosition(-speed, speed);
+        //     break;
+        // case keyCheck.down && keyCheck.right: // bas droite
+        //     updatePosition(speed, speed);
+        //     break;
         case keyCheck.up: // haut
             updatePosition(0, -speed);
             break;

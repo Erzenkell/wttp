@@ -22,8 +22,12 @@ const Gamu = (props) => {
 
     //map
     const [map, setMap] = useState(null);
+    const [mapLoaded, setMapLoaded] = useState(false);
     useEffect(() => {
-        setMap(generateRandomMap(global))
+        generateRandomMap().then((map) => {
+            setMap(map);
+            setMapLoaded(true);
+        });
     }, [global]);
 
     //assets
@@ -92,7 +96,7 @@ const Gamu = (props) => {
     });
 
     const play = () => {
-        if (assetsLoaded) {
+        if (assetsLoaded && mapLoaded) {
             const canvas = canvasRef.current;
             canvas.width = global.width;
             canvas.height = global.height;
@@ -135,7 +139,14 @@ const Gamu = (props) => {
     }, [assetsLoaded]);
 
     return(
-        <div className="canvas-wrapper">
+        <div className="canvas-wrapper" style={{
+            maxHeight: global.height, 
+            maxWidth: global.width,
+            minHeight: global.height,
+            minWidth: global.width,
+        }}>
+            {assetsLoaded ? null : <div className="loading">Loading Assets...</div>}
+            {mapLoaded ? null : <div className="loading">Loading Map...</div>}
             <canvas ref={canvasRef} {...props}/>
         </div>
     )
