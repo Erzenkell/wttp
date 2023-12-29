@@ -1,4 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
+import { Debug } from "./Debug/Debug";
+
 import {generateMap, generateRandomMap} from "../utils/generateMap";
 import { loadAssets } from "../utils/loadAssets";
 import { keyHandler } from "../utils/keyHandler";
@@ -139,16 +141,25 @@ const Gamu = (props) => {
     }, [assetsLoaded]);
 
     return(
-        <div className="canvas-wrapper" style={{
-            maxHeight: global.height, 
-            maxWidth: global.width,
-            minHeight: global.height,
-            minWidth: global.width,
-        }}>
-            {assetsLoaded ? null : <div className="loading">Loading Assets...</div>}
-            {mapLoaded ? null : <div className="loading">Loading Map...</div>}
-            <canvas ref={canvasRef} {...props}/>
-        </div>
+        <>
+            <Debug data={[
+                {title: 'X', value: charPosition.X},
+                {title: 'Y', value: charPosition.Y},
+                {title: 'mapX', value: charPosition.mapX},
+                {title: 'mapY', value: charPosition.mapY},
+                {title: 'direction', value: charPosition.direction},
+            ]}/>
+            <div className="canvas-wrapper frame" style={{
+                maxHeight: global.height, 
+                maxWidth: global.width,
+                minHeight: global.height,
+                minWidth: global.width,
+            }}>
+                {assetsLoaded ? null : <div className="loading">Loading Assets...</div>}
+                {mapLoaded ? null : <div className="loading">Loading Map...</div>}
+                <canvas ref={canvasRef} {...props}/>
+            </div>
+        </>
     )
 }
 
