@@ -1,4 +1,4 @@
-export const drawMap = (map, context, assets, charPosition, global) => {
+export const drawMap = (map, context, assets, charPosition, enemies, global) => {
     const tileScale = global.tileSize * global.scale;
     const mapY = Math.floor(charPosition.mapX / tileScale);
     const mapX = Math.floor(charPosition.mapY / tileScale);
@@ -13,11 +13,18 @@ export const drawMap = (map, context, assets, charPosition, global) => {
     for (let row = top; row < bottom; row++) {
         for (let col = left; col < right; col++) {
             const tile = map.content[row][col].sprite;
-            const sprite = assets.world.find((asset) => asset.src.endsWith(`${tile}.png`));
-            if (sprite) {
+            const mapSprite = assets.world.find((asset) => asset.src.endsWith(`${tile}.png`));
+            if (mapSprite) {
                 const x = i * tileScale;
                 const y = j * tileScale;
-                context.drawImage(sprite, x, y, tileScale, tileScale);
+                const enemy = enemies.find((enemy) => enemy.position[0] === row && enemy.position[1] === col);
+                context.drawImage(mapSprite, x, y, tileScale, tileScale);
+                if (enemy) {
+                    const enemySprite = assets.enemies.find((asset) => asset.src.endsWith(`${enemy.sprite}.png`));
+                    if (enemySprite) {
+                        context.drawImage(enemySprite, x, y, enemySprite.width * global.scale, enemySprite.height * global.scale);
+                    }
+                }
             }
             j++;
         }

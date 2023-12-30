@@ -2,6 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import { Debug } from "./Debug/Debug";
 
 import {generateMap, generateRandomMap} from "../utils/generateMap";
+import {generateEnemies} from "../utils/generateEnemies";
 import { loadAssets } from "../utils/loadAssets";
 import { keyHandler } from "../utils/keyHandler";
 import { updateCharSpritePosition } from "../utils/characterMovement";
@@ -20,6 +21,7 @@ const Gamu = (props) => {
         width: 800,
         height: 600,
         tileSize: 16,
+        characterSize: [16, 21]
     });
 
     //map
@@ -42,6 +44,19 @@ const Gamu = (props) => {
             setAssets(assets);
         });
     }, []);
+
+    //Enemies
+    const [enemiesLoaded, setEnemiesLoaded] = useState(false);
+    const [enemies, setEnemies] = useState([]);
+
+    useEffect(() => {
+        mapLoaded ?
+            generateEnemies(map, global).then((enemies) => {
+                setEnemiesLoaded(true);
+                setEnemies(enemies);
+            })
+        : null;
+    }, [mapLoaded]);
 
     //character
     let frame = 0; //sprite frame
@@ -98,13 +113,13 @@ const Gamu = (props) => {
     });
 
     const play = () => {
-        if (assetsLoaded && mapLoaded) {
+        if (assetsLoaded && mapLoaded && enemiesLoaded) {
             const canvas = canvasRef.current;
             canvas.width = global.width;
             canvas.height = global.height;
             const context = canvas.getContext('2d');
             //context.clearRect(0, 0, canvas.width, canvas.height);
-            drawMap(map, context, assets, charPosition, global);
+            drawMap(map, context, assets, charPosition, enemies, global);
             if(keyCheck.pressed === true) {
                 if(keyCheck.movement === true && isAttacking === false) {
                     animateChar(context, canvas);
@@ -142,13 +157,7 @@ const Gamu = (props) => {
 
     return(
         <>
-            <Debug data={[
-                {title: 'X', value: charPosition.X},
-                {title: 'Y', value: charPosition.Y},
-                {title: 'mapX', value: charPosition.mapX},
-                {title: 'mapY', value: charPosition.mapY},
-                {title: 'direction', value: charPosition.direction},
-            ]}/>
+            {/* <Debug data={debugData}/> */}
             <div className="canvas-wrapper frame" style={{
                 maxHeight: global.height, 
                 maxWidth: global.width,
@@ -157,6 +166,7 @@ const Gamu = (props) => {
             }}>
                 {assetsLoaded ? null : <div className="loading">Loading Assets...</div>}
                 {mapLoaded ? null : <div className="loading">Loading Map...</div>}
+                {enemiesLoaded ? null : <div className="loading">Loading Enemies...</div>}
                 <canvas ref={canvasRef} {...props}/>
             </div>
         </>

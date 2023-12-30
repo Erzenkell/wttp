@@ -4,9 +4,9 @@ export const updateCharSpritePosition = (src, keyCheck, charPosition, speed, can
 
     const closestTile = (x, y) => {
         const direction = charPosition.direction;
-        const tileX = Math.floor(x / (global.tileSize * 2));
-        const tileY = Math.floor(y / (global.tileSize * 2));
-        const directionX = direction === 'left' ? 1 : direction === 'right' ? 1 : 0;
+        const tileX = Math.floor((x + global.characterSize[0] * global.scale) / (global.tileSize * 2));
+        const tileY = Math.floor((y + global.characterSize[0] * global.scale) / (global.tileSize * 2));
+        const directionX = direction === 'left' ? -1 : direction === 'right' ? 1 : 0;
         const directionY = direction === 'up' ? -1 : direction === 'down' ? 1 : 0;
         return [tileX+directionX, tileY+directionY];
     };

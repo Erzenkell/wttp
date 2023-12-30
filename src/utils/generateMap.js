@@ -14,23 +14,25 @@ export const generateMap = (global) => {
 
 export const generateRandomMap = () => {
     return new Promise((resolve) => {
-        const map = { size: [1000, 1000], content: [] };
+        const map = { size: [500, 500], content: [] };
 
         const generateRow = async (i) => {
             const row = [];
             if (i < 20 || i > map.size[0] - 20) {
                 for (let j = 0; j < map.size[1]; j++) {
-                    row.push({ "sprite": `world-wall-1`, "isWall": true, "isBreakable": false });
+                    row.push({ "sprite": `world-wall-1`, "isWall": true, "isBreakable": false, "enemy": false });
                 }
             } else {
                 for (let j = 0; j < map.size[1]; j++) {
                     if (j <= 20 || j >= map.size[1] - 20) {
-                        row.push({ "sprite": `world-wall-1`, "isWall": true, "isBreakable": false });
+                        row.push({ "sprite": `world-wall-1`, "isWall": true, "isBreakable": false, "enemy": false });
                     } else {
+                        const haveEnemy = Math.floor(Math.random() * (50 - 1) + 1) === 1;
                         row.push({
                             "sprite": `world-grass-${Math.floor(Math.random() * (3 - 1) + 1)}`,
                             "isWall": false,
-                            "isBreakable": false
+                            "isBreakable": false,
+                            "enemy":  haveEnemy ? `enemy-${Math.floor(Math.random() * (3 - 1) + 1)}` : false,
                         });
                     }
                 }
