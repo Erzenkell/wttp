@@ -10,6 +10,8 @@ export const drawMap = (map, context, assets, charPosition, enemies, global) => 
     let i = 0;
     let j = 0;
 
+    var enemyList = [];
+
     for (let row = top; row < bottom; row++) {
         for (let col = left; col < right; col++) {
             const tile = map.content[row][col].sprite;
@@ -22,7 +24,7 @@ export const drawMap = (map, context, assets, charPosition, enemies, global) => 
                 if (enemy) {
                     const enemySprite = assets.enemies.find((asset) => asset.src.endsWith(`${enemy.sprite}.png`));
                     if (enemySprite) {
-                        context.drawImage(enemySprite, x, y, enemySprite.width * global.scale, enemySprite.height * global.scale);
+                        enemyList.push({ "sprite": enemySprite, "position": [x, y] });
                     }
                 }
             }
@@ -32,4 +34,6 @@ export const drawMap = (map, context, assets, charPosition, enemies, global) => 
         j = 0;
     }
     i= 0;
+    
+    return enemyList;
 };

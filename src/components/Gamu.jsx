@@ -113,43 +113,60 @@ const Gamu = (props) => {
     });
 
     const play = () => {
-        if (assetsLoaded && mapLoaded && enemiesLoaded) {
-            const canvas = canvasRef.current;
-            canvas.width = global.width;
-            canvas.height = global.height;
-            const context = canvas.getContext('2d');
-            //context.clearRect(0, 0, canvas.width, canvas.height);
-            drawMap(map, context, assets, charPosition, enemies, global);
-            if(keyCheck.pressed === true) {
-                if(keyCheck.movement === true && isAttacking === false) {
-                    animateChar(context, canvas);
-                } 
-                else {
-                    loadCharFrame('idle', context, canvas);
-                }  
-                if (keyCheck.space === true) {
-                    if (isAttacking === false) {
-                        isAttacking = true;
-                        attackFrame = 0;
-                        setTimeout(() => {
-                            isAttacking = false;
-                        }, 500);
-                    }    
-                }
-            }
-            else {       
+        if (!(assetsLoaded && mapLoaded && enemiesLoaded)) {
+            requestAnimationFrame(play);
+            return;
+        }
+    
+        const canvas = canvasRef.current;
+        const context = canvas.getContext('2d');
+        canvas.width = global.width;
+        canvas.height = global.height;
+    
+        const npcList = drawMap(map, context, assets, charPosition, enemies, global);
+        drawNpcs(context, npcList, global);
+        handleCharacterAnimation(context, canvas);
+        handleAttackAnimation(context, canvas);
+    
+        requestAnimationFrame(play);
+    };
+    
+    const drawNpcs = (context, npcList, global) => {
+        for (const npc in npcList) {
+            const { sprite, position } = npcList[npc];
+            context.drawImage(sprite, position[0], position[1], sprite.width * global.scale, sprite.height * global.scale);
+        }
+    };
+    
+    const handleCharacterAnimation = (context, canvas) => {
+        if (keyCheck.pressed) {
+            if (keyCheck.movement && !isAttacking) {
+                animateChar(context, canvas);
+            } else {
                 loadCharFrame('idle', context, canvas);
             }
-            if (isAttacking === true) {
-                if (attackFrame > 30) {
-                    attackFrame = 0;
-                }
-                attackFrame ++;
-                attackButton(charPosition, assets, context, attackFrame, global);
+    
+            if (keyCheck.space && !isAttacking) {
+                isAttacking = true;
+                attackFrame = 0;
+                setTimeout(() => {
+                    isAttacking = false;
+                }, 500);
             }
+        } else {
+            loadCharFrame('idle', context, canvas);
         }
-        requestAnimationFrame(play);
-    }
+    };
+
+    const handleAttackAnimation = (context, canvas) => {
+        if (isAttacking) {
+            if (attackFrame > 30) {
+                attackFrame = 0;
+            }
+            attackFrame++;
+            attackButton(charPosition, assets, context, attackFrame, global);
+        }
+    };
     
     useEffect(() => {
         play();
