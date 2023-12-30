@@ -1,4 +1,4 @@
-export const generateEnemies = (map, global) => {
+export const generateEnemies = (map) => {
     return new Promise((resolve, reject) => {
         try {
             const enemies = [];

@@ -27,6 +27,7 @@ const Gamu = (props) => {
     //map
     const [map, setMap] = useState(null);
     const [mapLoaded, setMapLoaded] = useState(false);
+
     useEffect(() => {
         generateRandomMap().then((map) => {
             setMap(map);
@@ -51,7 +52,7 @@ const Gamu = (props) => {
 
     useEffect(() => {
         mapLoaded ?
-            generateEnemies(map, global).then((enemies) => {
+            generateEnemies(map).then((enemies) => {
                 setEnemiesLoaded(true);
                 setEnemies(enemies);
             })
@@ -73,7 +74,7 @@ const Gamu = (props) => {
         direction: 'right',
     }
 
-    const loadCharFrame = (frame, context, canvas) => {
+    const loadCharFrame = (frame, context, npcList) => {
         let char = null;
         for(let i=0; i<assets.hero.length; i++) {
             // Check if the end of the string matches the target ending
@@ -83,17 +84,17 @@ const Gamu = (props) => {
             }
         }
         if (isAttacking === false && keyCheck.movement === true) {
-            charPosition = updateCharSpritePosition(char, keyCheck, charPosition, speed, canvas, global, map);
+            charPosition = updateCharSpritePosition(char, keyCheck, charPosition, speed, global, map, npcList);
         }
         const height = char.height * global.scale;
         const width = char.width * global.scale;
         context.drawImage(char, charPosition.X, charPosition.Y, width, height);
     }
 
-    const animateChar = (context, canvas) => {
+    const animateChar = (context, npcList) => {
         frame = (frame + 1) % (7 * factor);
         const charFrame = Math.floor(frame / factor) + 1;
-        loadCharFrame('walk-'+charFrame, context, canvas);
+        loadCharFrame('walk-'+charFrame, context, npcList);
     }
 
     //keyPress
@@ -125,8 +126,8 @@ const Gamu = (props) => {
     
         const npcList = drawMap(map, context, assets, charPosition, enemies, global);
         drawNpcs(context, npcList, global);
-        handleCharacterAnimation(context, canvas);
-        handleAttackAnimation(context, canvas);
+        handleCharacterAnimation(context, npcList);
+        handleAttackAnimation(context);
     
         requestAnimationFrame(play);
     };
@@ -138,12 +139,12 @@ const Gamu = (props) => {
         }
     };
     
-    const handleCharacterAnimation = (context, canvas) => {
+    const handleCharacterAnimation = (context, npcList) => {
         if (keyCheck.pressed) {
             if (keyCheck.movement && !isAttacking) {
-                animateChar(context, canvas);
+                animateChar(context, npcList);
             } else {
-                loadCharFrame('idle', context, canvas);
+                loadCharFrame('idle', context);
             }
     
             if (keyCheck.space && !isAttacking) {
@@ -154,11 +155,11 @@ const Gamu = (props) => {
                 }, 500);
             }
         } else {
-            loadCharFrame('idle', context, canvas);
+            loadCharFrame('idle', context);
         }
     };
 
-    const handleAttackAnimation = (context, canvas) => {
+    const handleAttackAnimation = (context) => {
         if (isAttacking) {
             if (attackFrame > 30) {
                 attackFrame = 0;
