@@ -1,7 +1,15 @@
 # WTTP
 
-To start client
-npm run dev
+## Usage
 
-To start chat server -> app/ws
+To start client 
+```bash
+npm run dev
+```
+
+To start chat server
+
+```bash
+cd app/ws
 node server.js
+```
