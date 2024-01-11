@@ -1,0 +1,36 @@
+.chat-wrapper {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    background: rgba(35, 34, 44, 0.308)
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px;
+}
+
+.chat-body {
+    display: flex;
+    flex-direction: column;
+    padding: 2px;
+    overflow-y: scroll;
+    min-height: 100px;
+    max-height: 400px;
+    min-width: 200px;
+    max-width: 500px;
+}
+
+.chat-message {
+    display: flex;
+    flex-direction: column;
+    padding: 2px;
+    max-width: 400px;
+}

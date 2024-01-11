@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import { Debug } from "./Debug/Debug";
+import { Chat } from "./Chat/Chat";
 
 import {generateMap, generateRandomMap} from "../utils/generateMap";
 import {generateEnemies} from "../utils/generateEnemies";
@@ -11,7 +12,6 @@ import { drawMap } from "../utils/drawMap";
 import './Gamu.css'
 
 const Gamu = (props) => {
-
     //canvas
     const canvasRef = useRef(null);
 
@@ -201,6 +201,7 @@ const Gamu = (props) => {
                 {enemiesLoaded ? null : <div className="loading">Loading Enemies...</div>}
                 <canvas ref={canvasRef} {...props}/>
             </div>
+            <Chat/>
         </>
     )
 }
