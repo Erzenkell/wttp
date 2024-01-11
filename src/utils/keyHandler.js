@@ -21,5 +21,9 @@ export const keyHandler = (e, keyCheck, status) => {
             keyCheck.movement = false;
             keyCheck.space = status;
             break;
+        case 13:
+            keyCheck.movement = false;
+            keyCheck.enter = status;
+            break;
     }
 }

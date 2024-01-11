@@ -27,7 +27,7 @@ export const updateCharSpritePosition = (src, keyCheck, charPosition, speed, glo
                 charRight > npc.position[0] &&
                 charPosition.X + deltaX * src.width < npcRight &&
                 charBottom > npc.position[1] &&
-                charPosition.Y + deltaY * src.width < npcBottom
+                charPosition.Y + deltaY * src.height < npcBottom
             ) {
                 return true;
             }

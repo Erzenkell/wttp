@@ -6,7 +6,7 @@ import {generateEnemies} from "../utils/generateEnemies";
 import { loadAssets } from "../utils/loadAssets";
 import { keyHandler } from "../utils/keyHandler";
 import { updateCharSpritePosition } from "../utils/characterMovement";
-import { attackButton } from "../utils/characterActions";
+import { attackButton, interactionButton } from "../utils/characterActions";
 import { drawMap } from "../utils/drawMap";
 import './Gamu.css'
 
@@ -65,6 +65,7 @@ const Gamu = (props) => {
     const factor = 6; //anim speed
     const speed = 1; //movement speed
     let isAttacking = false;
+    let isInteracting = false;
 
     let charPosition = {
         X: assetsLoaded ? global.width / 2 - assets.hero[0].width * global.scale / 2 : 0,
@@ -106,6 +107,7 @@ const Gamu = (props) => {
         left: false,
         right: false,
         space: false,
+        enter: false,
     }
     
     useEffect(() => {
@@ -127,6 +129,7 @@ const Gamu = (props) => {
         const npcList = drawMap(map, context, assets, charPosition, enemies, global);
         drawNpcs(context, npcList, global);
         handleCharacterAnimation(context, npcList);
+        handleInteractions(charPosition, npcList, global);
         handleAttackAnimation(context);
     
         requestAnimationFrame(play);
@@ -141,7 +144,7 @@ const Gamu = (props) => {
     
     const handleCharacterAnimation = (context, npcList) => {
         if (keyCheck.pressed) {
-            if (keyCheck.movement && !isAttacking) {
+            if (keyCheck.movement && !isAttacking && !isInteracting) {
                 animateChar(context, npcList);
             } else {
                 loadCharFrame('idle', context);
@@ -154,8 +157,19 @@ const Gamu = (props) => {
                     isAttacking = false;
                 }, 500);
             }
+
+            if (keyCheck.enter && !isInteracting) {
+                isInteracting = true;    
+            }
         } else {
             loadCharFrame('idle', context);
+        }
+    };
+
+    const handleInteractions = (charPosition, npcList, global) => {
+        if (isInteracting) {
+            interactionButton(charPosition, npcList, global);
+            isInteracting = false;
         }
     };
 
