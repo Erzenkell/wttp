@@ -14,6 +14,7 @@ export const Chat = () => {
             reconnectInterval: 3000,
         }
     );
+    const [chatOpen, setChatOpen] = useState(false);
     const [username, setUsername] = useState(null);
     const [tmpUsername, setTmpUsername] = useState(null);
     const [messageList, setMessageList] = useState([]);
@@ -29,50 +30,61 @@ export const Chat = () => {
     }
 
     useEffect(() => {
-        console.log(lastMessage)
         if (lastMessage !== null) {
             const messageObject = JSON.parse(lastMessage.data);
             const message = arrayBufferToString(messageObject.data);
+            message['time'] = new Date().toLocaleTimeString();
             setMessageList([...messageList, message]);
         }
-        console.log(messageList)
     }, [lastMessage]);
 
     function sendMessageToServer(message, username) {
         if (message === "" || username === null) return;
         const messageObject = {
             username: username,
-            message: message
+            message: message,
         }
         sendMessage(JSON.stringify(messageObject));
     }
 
     return (
-        <div className='chat-wrapper'>
-            <div className="chat-header">
-                {username !== null ?
-                <>
-                        <h3>Hi, {username}</h3>
-                </> : 
-                <>
-                    <input type="text" placeholder="Username" onChange={(event) => setTmpUsername(event.target.value)}/>
-                    <button onClick={() => setUsername(tmpUsername)}>Submit</button>
-                </> }
-            </div>
-            <div className='chat-body'>
-                {messageList.map((val, key) => {
-                    return (
-                        <div className="chat-message" key={`message-${key}`}>
-                            <div className="message-username">{val.username}:</div>
-                            <div className="message-text">{val.message}</div>
-                        </div>
-                    )
-                })}
-            </div>
-            <div className='chat-footer'>
-                <input type="text" placeholder="Message" onChange={(event) => setMessage(event.target.value)}/>
-                <button onClick={() => sendMessageToServer(message, username)}>Send</button>
-            </div>
+        <div className='chat-wrapper' style={!chatOpen ? {background: 'transparent', border: 'none'} : null}>
+        {chatOpen ? 
+            <>
+                <div className="chat-header">
+                    {username !== null ?
+                    <>
+                            <h3>{username}</h3>
+                    </> : 
+                    <>
+                        <input type="text" placeholder="Username" onChange={(event) => setTmpUsername(event.target.value)}/>
+                        <button onClick={() => setUsername(tmpUsername)}>Submit</button>
+                    </> }
+                    <button onClick={() => setChatOpen(false)}>X</button>
+                </div>
+                <div className='chat-body'>
+                    {messageList.map((val, key) => {
+                        return (
+                            <div className="chat-message" key={`message-${key}`}>
+                                <div className="message-info">
+                                    <div className="message-message">{val.username} :</div>
+                                    <div className="message-time">{val.time}</div>
+                                </div>
+                                <div className="message-text">{val.message}</div>
+                            </div>
+                        )
+                    })}
+                </div>
+                <div className='chat-message-input'>
+                    <input type="text" placeholder="Message" onChange={(event) => setMessage(event.target.value)}/>
+                    <button onClick={() => sendMessageToServer(message, username)}>Send</button>
+                </div>
+            </>
+        :
+            <button onClick={() => setChatOpen(true)}>
+                <img src='src/assets/chat/chat-icon.svg' style={{width: "50px", height: "50px"}} type='image/svg+xml'/>
+            </button>
+        }
         </div>
     )
 }
