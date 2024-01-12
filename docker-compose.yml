@@ -1,0 +1,11 @@
+# Developement build
+version: '0.0.1'
+services:
+  frontend:
+    build:
+      context: .
+    command: sh -c "npm i && npm run dev"
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend:/app

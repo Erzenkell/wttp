@@ -1,0 +1,53 @@
+.settings {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+.settings-button {
+    cursor: pointer;
+}
+
+@keyframes settingsHover {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.settings-button:hover {
+    animation: settingsHover 1s ease-in-out;
+}
+
+.settings-wrapper {
+    background: rgba(35, 34, 44, 0.500);
+    border-radius: 5px;
+    animation: createBox 0.5s ease-in-out;
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px;
+    margin-left: 10px;
+}
+
+.settings-list{
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    overflow-y: scroll;
+    overflow: auto;
+    cursor: pointer;
+}
+
+.settings-item:hover {
+    background: rgba(35, 34, 44, 0.500);
+}

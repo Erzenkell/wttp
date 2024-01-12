@@ -48,41 +48,43 @@ export const Chat = () => {
     }
 
     return (
-        <div className='chat-wrapper' style={!chatOpen ? {background: 'transparent', border: 'none'} : null}>
+        <div className='chat'>
         {chatOpen ? 
             <>
-                <div className="chat-header">
-                    {username !== null ?
-                    <>
-                            <h3>{username}</h3>
-                    </> : 
-                    <>
-                        <input type="text" placeholder="Username" onChange={(event) => setTmpUsername(event.target.value)}/>
-                        <button onClick={() => setUsername(tmpUsername)}>Submit</button>
-                    </> }
-                    <button onClick={() => setChatOpen(false)}>X</button>
-                </div>
-                <div className='chat-body'>
-                    {messageList.map((val, key) => {
-                        return (
-                            <div className="chat-message" key={`message-${key}`}>
-                                <div className="message-info">
-                                    <div className="message-message">{val.username} :</div>
-                                    <div className="message-time">{val.time}</div>
+                <div className="chat-wrapper frame">
+                    <div className="chat-header">
+                        {username !== null ?
+                        <>
+                                <h3>{username}</h3>
+                        </> : 
+                        <>
+                            <input type="text" placeholder="Username" onChange={(event) => setTmpUsername(event.target.value)}/>
+                            <button onClick={() => setUsername(tmpUsername)}>Submit</button>
+                        </> }
+                        <button onClick={() => setChatOpen(false)}>X</button>
+                    </div>
+                    <div className='chat-body'>
+                        {messageList.map((val, key) => {
+                            return (
+                                <div className="chat-message" key={`message-${key}`}>
+                                    <div className="message-info">
+                                        <div className="message-message">{val.username} :</div>
+                                        <div className="message-time">{val.time}</div>
+                                    </div>
+                                    <div className="message-text">{val.message}</div>
                                 </div>
-                                <div className="message-text">{val.message}</div>
-                            </div>
-                        )
-                    })}
-                </div>
-                <div className='chat-message-input'>
-                    <input type="text" placeholder="Message" onChange={(event) => setMessage(event.target.value)}/>
-                    <button onClick={() => sendMessageToServer(message, username)}>Send</button>
+                            )
+                        })}
+                    </div>
+                    <div className='chat-message-input frame'>
+                        <input type="text" placeholder="Message" onChange={(event) => setMessage(event.target.value)}/>
+                        <button onClick={() => sendMessageToServer(message, username)}>Send</button>
+                    </div>
                 </div>
             </>
         :
-            <button onClick={() => setChatOpen(true)}>
-                <img src='src/assets/chat/chat-icon.svg' style={{width: "50px", height: "50px"}} type='image/svg+xml'/>
+            <button style={!chatOpen ? {background: 'transparent', border: 'none'} : null} onClick={() => setChatOpen(true)}>
+                <img src='src/assets/chat/chat-icon.svg' style={{width: "50px", height: "50px", cursor: 'pointer'}} type='image/svg+xml'/>
             </button>
         }
         </div>

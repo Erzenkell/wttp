@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import { Debug } from "./Debug/Debug";
 import { Chat } from "./Chat/Chat";
+import { Settings } from "./Settings/Settings";
 
 import {generateMap, generateRandomMap} from "../utils/generateMap";
 import {generateEnemies} from "../utils/generateEnemies";
@@ -187,9 +188,29 @@ const Gamu = (props) => {
         play();
     }, [assetsLoaded]);
 
+    //debug
+    const [debug, setDebug] = useState(false);
+    const debugData = [
+        {
+            title: 'X',
+            value: charPosition.mapX,
+        },
+        {
+            title: 'Y',
+            value: charPosition.mapY,
+        },
+        {
+            title: 'Direction',
+            value: charPosition.direction,
+        },
+    ];
+    function toggleDebug() {
+        setDebug(!debug);
+    }
+
     return(
         <>
-            {/* <Debug data={debugData}/> */}
+            {debug ? <Debug debugData={debugData}/> : null}
             <div className="canvas-wrapper frame" style={{
                 maxHeight: global.height, 
                 maxWidth: global.width,
@@ -202,6 +223,7 @@ const Gamu = (props) => {
                 <canvas ref={canvasRef} {...props}/>
             </div>
             <Chat/>
+            <Settings debug={toggleDebug}/>
         </>
     )
 }

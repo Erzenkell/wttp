@@ -1,10 +1,12 @@
 import react from 'react'
+import Draggable from 'react-draggable'
 import './Debug.css'
 
-export const Debug = ({ data }) => {
-    return (
+export const Debug = ({debugData}) => {
+  return (
+    <Draggable>
       <div className='debug frame'>
-        {data.map(({ title, value }, index) => {
+        {debugData?.map(({ title, value }, index) => {
           return (
             <div key={index} className='debug-item'>
               <div className='debug-item'>{title}: {value}</div>
@@ -12,5 +14,6 @@ export const Debug = ({ data }) => {
           );
         })}
       </div>
-    );
-  }
+    </Draggable>
+  );
+}

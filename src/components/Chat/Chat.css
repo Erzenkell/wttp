@@ -1,4 +1,4 @@
-.chat-wrapper {
+.chat {
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -6,9 +6,25 @@
     left: 0;
     margin-left: 10px;
     margin-bottom: 10px;
-    border: 1px solid #ccc;
+}
+
+.chat-wrapper {
     background: rgba(35, 34, 44, 0.500);
     border-radius: 5px;
+    animation: createBox 0.5s ease-in-out;
+}
+
+@keyframes createBox {
+    from {
+      transform: scale(0);
+    }
+    to {
+      transform: scale(1);
+    }
+}
+
+.chat-wrapper ::placeholder {
+    color: #fff;
 }
 
 .chat-wrapper button {
@@ -68,6 +84,5 @@
     justify-content: space-between;
     align-items: center;
     padding: 2px;
-    border: 1px solid #ccc;
     border-radius: 5px;
 }
