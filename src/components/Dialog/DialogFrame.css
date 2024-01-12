@@ -1,0 +1,10 @@
+.dialog-wrapper {
+    position: absolute;
+    transform: translateY(-220px);
+    margin-left: 10px;
+    width: 780px;
+    height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.5);
+}

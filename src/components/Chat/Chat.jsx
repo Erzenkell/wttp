@@ -3,7 +3,6 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 import './Chat.css'
 
 export const Chat = () => {
-
     const socketUrl = 'ws://localhost:8080';
     const { sendMessage, lastMessage, readyState } = useWebSocket(
         socketUrl,

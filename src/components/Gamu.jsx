@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import { Debug } from "./Debug/Debug";
-import { Chat } from "./Chat/Chat";
 import { Settings } from "./Settings/Settings";
+import { DialogFrame } from "./Dialog/DialogFrame";
 
 import {generateMap, generateRandomMap} from "../utils/generateMap";
 import {generateEnemies} from "../utils/generateEnemies";
@@ -60,6 +60,10 @@ const Gamu = (props) => {
         : null;
     }, [mapLoaded]);
 
+    //Interaction
+    const [dialog, setDialog] = useState(false);
+    const [dialogData, setDialogData] = useState([]);
+
     //character
     let frame = 0; //sprite frame
     let attackFrame = 0; //attack frame
@@ -67,6 +71,7 @@ const Gamu = (props) => {
     const speed = 1; //movement speed
     let isAttacking = false;
     let isInteracting = false;
+    let collision = false;
 
     let charPosition = {
         X: assetsLoaded ? global.width / 2 - assets.hero[0].width * global.scale / 2 : 0,
@@ -85,8 +90,8 @@ const Gamu = (props) => {
                 break;
             }
         }
-        if (isAttacking === false && keyCheck.movement === true) {
-            charPosition = updateCharSpritePosition(char, keyCheck, charPosition, speed, global, map, npcList);
+        if (isAttacking === false && keyCheck.movement === true && !isInteracting) {
+            charPosition, collision = updateCharSpritePosition(char, keyCheck, charPosition, speed, global, map, npcList);
         }
         const height = char.height * global.scale;
         const width = char.width * global.scale;
@@ -130,7 +135,7 @@ const Gamu = (props) => {
         const npcList = drawMap(map, context, assets, charPosition, enemies, global);
         drawNpcs(context, npcList, global);
         handleCharacterAnimation(context, npcList);
-        handleInteractions(charPosition, npcList, global);
+        handleInteractions(collision, global);
         handleAttackAnimation(context);
     
         setDebugData(
@@ -152,14 +157,14 @@ const Gamu = (props) => {
     };
     
     const handleCharacterAnimation = (context, npcList) => {
-        if (keyCheck.pressed) {
-            if (keyCheck.movement && !isAttacking && !isInteracting) {
+        if (keyCheck.pressed && !isAttacking && !isInteracting) {
+            if (keyCheck.movement) {
                 animateChar(context, npcList);
             } else {
                 loadCharFrame('idle', context);
             }
     
-            if (keyCheck.space && !isAttacking) {
+            if (keyCheck.space) {
                 isAttacking = true;
                 attackFrame = 0;
                 setTimeout(() => {
@@ -167,21 +172,30 @@ const Gamu = (props) => {
                 }, 500);
             }
 
-            if (keyCheck.enter && !isInteracting) {
-                isInteracting = true;    
+            if (keyCheck.enter) {
+                isInteracting = true;   
+                setTimeout(() => {
+                    isInteracting = false;
+                }, 1000); 
             }
         } else {
             loadCharFrame('idle', context);
         }
     };
 
-    const handleInteractions = (charPosition, npcList, global) => {
+    const handleInteractions = (collision, global) => {
         if (isInteracting) {
-            interactionButton(charPosition, npcList, global);
-            isInteracting = false;
+            var interaction = interactionButton(collision, global);
+            if (interaction !== false) {
+                if(interaction.type === 'dialog') {
+                    setDialogData(interaction.data);
+                    setDialog(true);
+                    interaction = false;
+                }
+            }
         }
     };
-
+    
     const handleAttackAnimation = (context) => {
         if (isAttacking) {
             if (attackFrame > 30) {
@@ -218,7 +232,7 @@ const Gamu = (props) => {
                 {enemiesLoaded ? null : <div className="loading">Loading Enemies...</div>}
                 <canvas ref={canvasRef} {...props}/>
             </div>
-            <Chat/>
+            {dialog ? <DialogFrame dialogContent={dialogData} setDialog={setDialog}/> : null}
             <Settings debug={toggleDebug}/>
         </>
     )

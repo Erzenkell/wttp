@@ -1,4 +1,4 @@
-export const updateCharSpritePosition = (src, keyCheck, charPosition, speed, global, map, npcList) => {
+export const updateCharSpritePosition = (src, keyCheck, charPosition, speed, global, map, npcList, collision) => {
     const isWithinBoundsX = (x) => x >= 0 && x <= map.size[0] * global.scale * global.tileSize - src.width;
     const isWithinBoundsY = (y) => y >= 0 && y <= map.size[1] * global.scale * global.tileSize - src.height;
 
@@ -18,7 +18,7 @@ export const updateCharSpritePosition = (src, keyCheck, charPosition, speed, glo
 
     const npcCollision = (deltaX, deltaY) => {
         const charRight = charPosition.X + deltaX * src.width + src.width;
-        const charBottom = charPosition.Y + deltaY * src.width + src.height;
+        const charBottom = charPosition.Y + deltaY * src.height + src.height;
     
         for (const npc of npcList) {
             const npcRight = npc.position[0] + npc.sprite.width;
@@ -29,7 +29,7 @@ export const updateCharSpritePosition = (src, keyCheck, charPosition, speed, glo
                 charBottom > npc.position[1] &&
                 charPosition.Y + deltaY * src.height < npcBottom
             ) {
-                return true;
+                return ['npc', npc];
             }
         }
         return false;
@@ -37,9 +37,20 @@ export const updateCharSpritePosition = (src, keyCheck, charPosition, speed, glo
 
     const updatePosition = (deltaX, deltaY) => {
         if (isWithinBoundsX(charPosition.mapX + deltaX) && isWithinBoundsY(charPosition.mapY + deltaY)) {
-            if (!isWall(charPosition.mapX + deltaX, charPosition.mapY + deltaY) && !npcCollision(deltaX * global.scale, deltaY * global.scale)) {
-                charPosition.mapX += global.tileSize * deltaX;
-                charPosition.mapY += global.tileSize * deltaY;
+            const wall = isWall(charPosition.mapX + deltaX, charPosition.mapY + deltaY)
+            if (!wall) {
+                const npc = npcCollision(deltaX * global.scale, deltaY * global.scale);
+                if (!npc) {
+                    charPosition.mapX += global.tileSize * deltaX;
+                    charPosition.mapY += global.tileSize * deltaY;
+                    collision = false
+                }
+                else {
+                    collision = npc; 
+                }
+            }
+            else {
+                collision = 'wall';
             }
         }
     };
@@ -81,5 +92,5 @@ export const updateCharSpritePosition = (src, keyCheck, charPosition, speed, glo
         ? 'right'
         : charPosition.direction;
 
-    return charPosition;
+    return charPosition, collision;
 };
