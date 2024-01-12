@@ -133,6 +133,14 @@ const Gamu = (props) => {
         handleInteractions(charPosition, npcList, global);
         handleAttackAnimation(context);
     
+        setDebugData(
+            [
+                {title: 'X', value: charPosition.mapX},
+                {title: 'Y', value: charPosition.mapY},
+                {title: 'direction', value: charPosition.direction},
+            ]
+        );
+
         requestAnimationFrame(play);
     };
     
@@ -190,20 +198,8 @@ const Gamu = (props) => {
 
     //debug
     const [debug, setDebug] = useState(false);
-    const debugData = [
-        {
-            title: 'X',
-            value: charPosition.mapX,
-        },
-        {
-            title: 'Y',
-            value: charPosition.mapY,
-        },
-        {
-            title: 'Direction',
-            value: charPosition.direction,
-        },
-    ];
+    const [debugData, setDebugData] = useState([]);
+
     function toggleDebug() {
         setDebug(!debug);
     }
