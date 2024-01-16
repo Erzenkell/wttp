@@ -8,6 +8,7 @@ export const generateEnemies = (map) => {
                         const enemy = {
                             "sprite": map.content[i][j].enemy,
                             "position": [i, j],
+                            "type": "enemy",
                             "isAlive": true,
                             "isAttacking": false,
                             "isMoving": false,

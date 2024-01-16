@@ -6,11 +6,11 @@ import './DialogFrame.css'
 export const DialogFrame = ({dialogContent, setDialog}) => {
     return (
         <div className='dialog-wrapper frame'>
-            <div className='dialog-name'>
+            <div className='dialog-item dialog-name'>
                 {dialogContent?.name}
             </div>
-            <div className='dialog-text'>
-                {/* <Typewriter text={dialogContent.text} speed={50}/> */}
+            <div className='dialog-item dialog-text'>
+                {dialogContent?.text}
             </div>
         </div>
     );

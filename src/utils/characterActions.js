@@ -15,7 +15,7 @@ export const attackButton = (charPosition, assets, context, frame, global) => {
 };
 
 export const interactionButton = (collision, global) => {
-    if (collision[0] === "npc") {
+    if (collision[1]?.type === "npc") {
         const npcData = {
             type: "dialog",
             data: {
@@ -24,6 +24,17 @@ export const interactionButton = (collision, global) => {
             },
         };
         return npcData;
+    }
+    else if (collision[1]?.type === "enemy") {
+        const enemyData = {
+            type: "fight",
+            data: {
+                'name': 'Enemy',
+                'hp': 100,
+                'attack': 10,
+            },
+        };
+        return enemyData;
     }
     return false;
 };

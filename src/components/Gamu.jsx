@@ -1,7 +1,8 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import { Debug } from "./Debug/Debug";
 import { Settings } from "./Settings/Settings";
 import { DialogFrame } from "./Dialog/DialogFrame";
+import { CombatFrame } from "./Combat/CombatFrame";
 
 import {generateMap, generateRandomMap} from "../utils/generateMap";
 import {generateEnemies} from "../utils/generateEnemies";
@@ -50,6 +51,9 @@ const Gamu = (props) => {
     //Enemies
     const [enemiesLoaded, setEnemiesLoaded] = useState(false);
     const [enemies, setEnemies] = useState([]);
+
+    const [combat, setCombat] = useState(false);
+    const [combatData, setCombatData] = useState([]);
 
     useEffect(() => {
         mapLoaded ?
@@ -116,7 +120,7 @@ const Gamu = (props) => {
         enter: false,
     }
     
-    useEffect(() => {
+    useEffect(() => {  
         document.addEventListener('keydown', e => keyHandler(e, keyCheck, true), true);
         document.addEventListener('keyup', e => keyHandler(e, keyCheck, false), true);
     });
@@ -138,13 +142,13 @@ const Gamu = (props) => {
         handleInteractions(collision, global);
         handleAttackAnimation(context);
     
-        setDebugData(
+        debug ? setDebugData(
             [
                 {title: 'X', value: charPosition.mapX},
                 {title: 'Y', value: charPosition.mapY},
                 {title: 'direction', value: charPosition.direction},
             ]
-        );
+        ): null;
 
         requestAnimationFrame(play);
     };
@@ -174,9 +178,6 @@ const Gamu = (props) => {
 
             if (keyCheck.enter) {
                 isInteracting = true;   
-                setTimeout(() => {
-                    isInteracting = false;
-                }, 1000); 
             }
         } else {
             loadCharFrame('idle', context);
@@ -185,13 +186,19 @@ const Gamu = (props) => {
 
     const handleInteractions = (collision, global) => {
         if (isInteracting) {
-            var interaction = interactionButton(collision, global);
+            const interaction = interactionButton(collision, global);
             if (interaction !== false) {
                 if(interaction.type === 'dialog') {
                     setDialogData(interaction.data);
                     setDialog(true);
-                    interaction = false;
                 }
+                else if (interaction.type === 'fight') {
+                    setCombatData(interaction.data);
+                    setCombat(true);
+                }
+            }
+            else {
+                setDialog(false);
             }
         }
     };
@@ -233,6 +240,7 @@ const Gamu = (props) => {
                 <canvas ref={canvasRef} {...props}/>
             </div>
             {dialog ? <DialogFrame dialogContent={dialogData} setDialog={setDialog}/> : null}
+            {combat ? <CombatFrame combatData={combatData} setCombatData={setCombat}/> : null}
             <Settings debug={toggleDebug}/>
         </>
     )

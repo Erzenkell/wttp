@@ -24,7 +24,7 @@ export const drawMap = (map, context, assets, charPosition, enemies, global) => 
                 if (enemy) {
                     const enemySprite = assets.enemies.find((asset) => asset.src.endsWith(`${enemy.sprite}.png`));
                     if (enemySprite) {
-                        enemyList.push({ "sprite": enemySprite, "position": [x, y] });
+                        enemyList.push({ "sprite": enemySprite, "position": [x, y], "type": "enemy" });
                     }
                 }
             }
