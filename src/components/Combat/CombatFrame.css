@@ -1,0 +1,26 @@
+.combat-wrapper {
+    position: absolute;
+    transform: translateY(-600px);
+    margin-left: 10px;
+    width: 780px;
+    height: 580px;
+    overflow-y: auto;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: space-between;
+}
+
+.combat-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 750px;
+    height: 50px;
+    padding: 0 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}

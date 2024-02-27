@@ -1,4 +1,6 @@
 import React, {useEffect, useMemo, useRef, useState} from "react";
+import throttle from 'lodash.throttle';
+
 import { Debug } from "./Debug/Debug";
 import { Settings } from "./Settings/Settings";
 import { DialogFrame } from "./Dialog/DialogFrame";
@@ -13,7 +15,21 @@ import { attackButton, interactionButton } from "../utils/characterActions";
 import { drawMap } from "../utils/drawMap";
 import './Gamu.css'
 
-const Gamu = (props) => {
+const Gamu = (sendJsonMessage) => {
+    //Websocket
+
+    const userID = useMemo(() => Date.now().toString(36) + Math.random().toString(36).slice(2), []);
+    const THROTTLE = 50 //ms
+    const sendJsonMessageThrottled = useRef(throttle(sendJsonMessage, THROTTLE))
+
+    useEffect(() => {
+        sendJsonMessage({
+            x: 0,
+            y: 0,
+            userID: userID,
+        })
+    }, [charPosition, sendJsonMessage]);
+
     //canvas
     const canvasRef = useRef(null);
 
@@ -52,9 +68,6 @@ const Gamu = (props) => {
     const [enemiesLoaded, setEnemiesLoaded] = useState(false);
     const [enemies, setEnemies] = useState([]);
 
-    const [combat, setCombat] = useState(false);
-    const [combatData, setCombatData] = useState([]);
-
     useEffect(() => {
         mapLoaded ?
             generateEnemies(map).then((enemies) => {
@@ -74,7 +87,6 @@ const Gamu = (props) => {
     const factor = 6; //anim speed
     const speed = 1; //movement speed
     let isAttacking = false;
-    let isInteracting = false;
     let collision = false;
 
     let charPosition = {
@@ -85,6 +97,28 @@ const Gamu = (props) => {
         direction: 'right',
     }
 
+    const [charData, setCharData] = useState([]);
+    const [combatData, setCombatData] = useState([]);
+    let combat = false;
+
+    useEffect(() => {
+        setCharData({
+            'name': 'Hero',
+            'hp': 100,
+            'attack': 10,
+            'combat': false,
+            'isInteracting': false,
+        })
+    }, []);
+
+    useEffect(() => {
+        if(combat === true) {
+            console.log('azeazeazeaze');
+            combat = false;
+            requestAnimationFrame(play);
+        }
+    }, [charData.combat]);
+
     const loadCharFrame = (frame, context, npcList) => {
         let char = null;
         for(let i=0; i<assets.hero.length; i++) {
@@ -94,7 +128,7 @@ const Gamu = (props) => {
                 break;
             }
         }
-        if (isAttacking === false && keyCheck.movement === true && !isInteracting) {
+        if (isAttacking === false && keyCheck.movement === true && !charData.isInteracting) {
             charPosition, collision = updateCharSpritePosition(char, keyCheck, charPosition, speed, global, map, npcList);
         }
         const height = char.height * global.scale;
@@ -139,7 +173,7 @@ const Gamu = (props) => {
         const npcList = drawMap(map, context, assets, charPosition, enemies, global);
         drawNpcs(context, npcList, global);
         handleCharacterAnimation(context, npcList);
-        handleInteractions(collision, global);
+        handleInteractions(collision, global, charData);
         handleAttackAnimation(context);
     
         debug ? setDebugData(
@@ -149,8 +183,9 @@ const Gamu = (props) => {
                 {title: 'direction', value: charPosition.direction},
             ]
         ): null;
-
-        requestAnimationFrame(play);
+        if(combat !== true) {
+            requestAnimationFrame(play);
+        }
     };
     
     const drawNpcs = (context, npcList, global) => {
@@ -161,7 +196,7 @@ const Gamu = (props) => {
     };
     
     const handleCharacterAnimation = (context, npcList) => {
-        if (keyCheck.pressed && !isAttacking && !isInteracting) {
+        if (keyCheck.pressed && !isAttacking && !charData.isInteracting) {
             if (keyCheck.movement) {
                 animateChar(context, npcList);
             } else {
@@ -177,15 +212,15 @@ const Gamu = (props) => {
             }
 
             if (keyCheck.enter) {
-                isInteracting = true;   
+                charData.isInteracting =true;   
             }
         } else {
             loadCharFrame('idle', context);
         }
     };
 
-    const handleInteractions = (collision, global) => {
-        if (isInteracting) {
+    const handleInteractions = (collision, global, charData) => {
+        if (charData.isInteracting === true && combat === false) {
             const interaction = interactionButton(collision, global);
             if (interaction !== false) {
                 if(interaction.type === 'dialog') {
@@ -194,7 +229,11 @@ const Gamu = (props) => {
                 }
                 else if (interaction.type === 'fight') {
                     setCombatData(interaction.data);
-                    setCombat(true);
+                    setCharData({
+                        ...charData,
+                        combat: true,
+                    });
+                    combat = true;
                 }
             }
             else {
@@ -240,7 +279,7 @@ const Gamu = (props) => {
                 <canvas ref={canvasRef} {...props}/>
             </div>
             {dialog ? <DialogFrame dialogContent={dialogData} setDialog={setDialog}/> : null}
-            {combat ? <CombatFrame combatData={combatData} setCombatData={setCombat}/> : null}
+            {charData.combat ? <CombatFrame combatData={combatData} setCombatData={setCombatData} charData={charData} setCharData={setCharData} keyCheck={keyCheck}/> : null}
             <Settings debug={toggleDebug}/>
         </>
     )

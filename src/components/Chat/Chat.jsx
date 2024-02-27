@@ -1,18 +1,7 @@
 import react, {useState, useEffect} from 'react'
-import useWebSocket, { ReadyState } from 'react-use-websocket';
 import './Chat.css'
 
-export const Chat = () => {
-    const socketUrl = 'ws://localhost:8080';
-    const { sendMessage, lastMessage, readyState } = useWebSocket(
-        socketUrl,
-        {
-            share: true,
-            shouldReconnect: () => true,
-            reconnectAttempts: 10,
-            reconnectInterval: 3000,
-        }
-    );
+export const Chat = ({lastMessage, sendMessage}) => {
     const [chatOpen, setChatOpen] = useState(false);
     const [username, setUsername] = useState(null);
     const [tmpUsername, setTmpUsername] = useState(null);
