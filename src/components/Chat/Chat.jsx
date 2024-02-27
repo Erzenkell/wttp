@@ -22,13 +22,14 @@ export const Chat = ({lastMessage, sendMessage}) => {
             const messageObject = JSON.parse(lastMessage.data);
             const message = arrayBufferToString(messageObject.data);
             message['time'] = new Date().toLocaleTimeString();
-            setMessageList([...messageList, message]);
+            if(message.type === 'chat') setMessageList([...messageList, message]);
         }
     }, [lastMessage]);
 
     function sendMessageToServer(message, username) {
         if (message === "" || username === null) return;
         const messageObject = {
+            type: 'chat',
             username: username,
             message: message,
         }

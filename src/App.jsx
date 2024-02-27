@@ -8,7 +8,7 @@ import './App.css'
 function App() {
 
   const socketUrl = 'ws://localhost:8080';
-  const { sendMessage, lastMessage, sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(
+  const { sendMessage, lastMessage, readyState } = useWebSocket(
       socketUrl,
       {
           share: true,
@@ -20,7 +20,7 @@ function App() {
 
   return (
     <div className='app'>
-      <Gamu sendJsonMessage={sendJsonMessage} lastJsonMessage={lastJsonMessage}/>
+      <Gamu sendJsonMessage={sendMessage} lastJsonMessage={lastMessage}/>
       <Chat lastMessage={lastMessage} sendMessage={sendMessage}/>
     </div>
   )

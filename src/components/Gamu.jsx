@@ -15,20 +15,16 @@ import { attackButton, interactionButton } from "../utils/characterActions";
 import { drawMap } from "../utils/drawMap";
 import './Gamu.css'
 
-const Gamu = (sendJsonMessage) => {
-    //Websocket
+function arrayBufferToString(buffer) {
+    let str = '';
+    const array = new Uint8Array(buffer);
+    for (let i = 0; i < array.length; i++) {
+      str += String.fromCharCode(array[i]);
+    }
+    return JSON.parse(str);
+}
 
-    const userID = useMemo(() => Date.now().toString(36) + Math.random().toString(36).slice(2), []);
-    const THROTTLE = 50 //ms
-    const sendJsonMessageThrottled = useRef(throttle(sendJsonMessage, THROTTLE))
-
-    useEffect(() => {
-        sendJsonMessage({
-            x: 0,
-            y: 0,
-            userID: userID,
-        })
-    }, [charPosition, sendJsonMessage]);
+const Gamu = ({sendJsonMessage, lastJsonMessage}) => {
 
     //canvas
     const canvasRef = useRef(null);
@@ -82,14 +78,14 @@ const Gamu = (sendJsonMessage) => {
     const [dialogData, setDialogData] = useState([]);
 
     //character
-    let frame = 0; //sprite frame
-    let attackFrame = 0; //attack frame
+    var frame = 0; //sprite frame
+    var attackFrame = 0; //attack frame
     const factor = 6; //anim speed
     const speed = 1; //movement speed
-    let isAttacking = false;
-    let collision = false;
+    var isAttacking = false;
+    var collision = false;
 
-    let charPosition = {
+    var charPosition = {
         X: assetsLoaded ? global.width / 2 - assets.hero[0].width * global.scale / 2 : 0,
         Y: assetsLoaded ? global.height / 2 - assets.hero[0].height * global.scale / 2 : 0,
         mapX: 800,
@@ -99,7 +95,7 @@ const Gamu = (sendJsonMessage) => {
 
     const [charData, setCharData] = useState([]);
     const [combatData, setCombatData] = useState([]);
-    let combat = false;
+    var combat = false;
 
     useEffect(() => {
         setCharData({
@@ -130,6 +126,12 @@ const Gamu = (sendJsonMessage) => {
         }
         if (isAttacking === false && keyCheck.movement === true && !charData.isInteracting) {
             charPosition, collision = updateCharSpritePosition(char, keyCheck, charPosition, speed, global, map, npcList);
+            sendJsonMessageThrottled.current(JSON.stringify({
+                type: 'character',
+                x: charPosition.mapX,
+                y: charPosition.mapY,
+                userID: userID,
+            }))
         }
         const height = char.height * global.scale;
         const width = char.width * global.scale;
@@ -161,7 +163,6 @@ const Gamu = (sendJsonMessage) => {
 
     const play = () => {
         if (!(assetsLoaded && mapLoaded && enemiesLoaded)) {
-            requestAnimationFrame(play);
             return;
         }
     
@@ -183,6 +184,7 @@ const Gamu = (sendJsonMessage) => {
                 {title: 'direction', value: charPosition.direction},
             ]
         ): null;
+
         if(combat !== true) {
             requestAnimationFrame(play);
         }
@@ -253,7 +255,9 @@ const Gamu = (sendJsonMessage) => {
     };
     
     useEffect(() => {
-        play();
+        if(assetsLoaded && mapLoaded && enemiesLoaded) {
+            play();
+        }
     }, [assetsLoaded]);
 
     //debug
@@ -263,6 +267,12 @@ const Gamu = (sendJsonMessage) => {
     function toggleDebug() {
         setDebug(!debug);
     }
+
+    //Websocket
+
+    const userID = useMemo(() => Date.now().toString(36) + Math.random().toString(36).slice(2), []);
+    const THROTTLE = 500 //ms
+    const sendJsonMessageThrottled = useRef(throttle(sendJsonMessage, THROTTLE))
 
     return(
         <>
@@ -276,7 +286,7 @@ const Gamu = (sendJsonMessage) => {
                 {assetsLoaded ? null : <div className="loading">Loading Assets...</div>}
                 {mapLoaded ? null : <div className="loading">Loading Map...</div>}
                 {enemiesLoaded ? null : <div className="loading">Loading Enemies...</div>}
-                <canvas ref={canvasRef} {...props}/>
+                <canvas ref={canvasRef}/>
             </div>
             {dialog ? <DialogFrame dialogContent={dialogData} setDialog={setDialog}/> : null}
             {charData.combat ? <CombatFrame combatData={combatData} setCombatData={setCombatData} charData={charData} setCharData={setCharData} keyCheck={keyCheck}/> : null}
