@@ -1,4 +1,5 @@
 import React, {useEffect, useMemo, useRef, useState} from "react";
+import PropTypes from "prop-types";
 import throttle from 'lodash.throttle';
 
 import { Debug } from "./Debug/Debug";
@@ -53,6 +54,8 @@ const Gamu = ({sendJsonMessage, lastJsonMessage}) => {
     const sendJsonMessageThrottled = useRef(throttle(sendJsonMessage, THROTTLE))
     const [lastMessage, setLastMessage] = useState(null);
     
+    const [charactersList, setCharactersList] = useState([]);
+
     useEffect(() => {
         if (lastJsonMessage !== null) {
             const messageObject = JSON.parse(lastJsonMessage.data);
@@ -113,7 +116,7 @@ const Gamu = ({sendJsonMessage, lastJsonMessage}) => {
     const [dialogData, setDialogData] = useState([]);
 
     //character
-    var frame = 0; //sprite frame
+    const [frame, setFrame] = useState(0) //sprite frame
     var attackFrame = 0; //attack frame
     const factor = 6; //anim speed
     const speed = 1; //movement speed
@@ -169,7 +172,7 @@ const Gamu = ({sendJsonMessage, lastJsonMessage}) => {
     }
 
     const animateChar = (context, npcList) => {
-        frame = (frame + 1) % (7 * factor);
+        setFrame((frame + 1) % (7 * factor));
         const charFrame = Math.floor(frame / factor) + 1;
         loadCharFrame('walk-'+charFrame, context, npcList);
     }
@@ -217,7 +220,7 @@ const Gamu = ({sendJsonMessage, lastJsonMessage}) => {
 
         if (lastMessage !== null && lastMessage.userID !== userID) {
             if(charPosition.mapX - lastMessage.x < 12 * global.tileSize * global.scale && charPosition.mapY - lastMessage.y < 12 * global.tileSize * global.scale) {
-                context.drawImage(assets.hero[0], charPosition.X + charPosition.mapX - lastMessage.x, charPosition.Y + charPosition.mapY - lastMessage.y, 32, 42);
+                context.drawImage(assets.hero[0], charPosition.X - (charPosition.mapX - lastMessage.x) - global.tileSize, charPosition.Y - (charPosition.mapY - lastMessage.y) - global.tileSize, 32, 42);
             }
         }
         // if(combat !== true) {
@@ -325,5 +328,10 @@ const Gamu = ({sendJsonMessage, lastJsonMessage}) => {
         </>
     )
 }
+
+Gamu.propTypes = {
+    sendJsonMessage: PropTypes.func.isRequired,
+    lastJsonMessage: PropTypes.object,
+};
 
 export default Gamu;
