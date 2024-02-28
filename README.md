@@ -11,7 +11,7 @@ To start client
 npm run dev
 ```
 
-To start chat server
+To start Websocket server
 
 ```bash
 cd app/ws
