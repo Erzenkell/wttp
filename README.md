@@ -1,6 +1,7 @@
 # WTTP
 
 React project on canvas and Websocket
+
 use Arrow keys to move character and Enter to interact with npcs
 
 ## Usage
