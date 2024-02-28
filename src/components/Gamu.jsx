@@ -24,7 +24,43 @@ function arrayBufferToString(buffer) {
     return JSON.parse(str);
 }
 
+function useAnimationFrame(callback) {
+    const requestRef = useRef();
+    const previousTimeRef = useRef();
+
+    const animate = time => {
+        if (previousTimeRef.current !== undefined) {
+            const deltaTime = time - previousTimeRef.current;
+            callback(deltaTime);
+        }
+        previousTimeRef.current = time;
+        requestRef.current = requestAnimationFrame(animate);
+    };
+
+    useEffect(() => {
+        requestRef.current = requestAnimationFrame(animate);
+        return () => cancelAnimationFrame(requestRef.current);
+    }, [callback]);
+
+    return requestRef;
+}
+
+
 const Gamu = ({sendJsonMessage, lastJsonMessage}) => {
+
+    //Websocket
+    const userID = useMemo(() => Date.now().toString(36) + Math.random().toString(36).slice(2), []);
+    const THROTTLE = 500 //ms
+    const sendJsonMessageThrottled = useRef(throttle(sendJsonMessage, THROTTLE))
+    const [lastMessage, setLastMessage] = useState(null);
+    
+    useEffect(() => {
+        if (lastJsonMessage !== null) {
+            const messageObject = JSON.parse(lastJsonMessage.data);
+            const message = arrayBufferToString(messageObject.data);
+            setLastMessage(message);
+        }
+    }, [lastJsonMessage]);
 
     //canvas
     const canvasRef = useRef(null);
@@ -85,13 +121,13 @@ const Gamu = ({sendJsonMessage, lastJsonMessage}) => {
     var isAttacking = false;
     var collision = false;
 
-    var charPosition = {
-        X: assetsLoaded ? global.width / 2 - assets.hero[0].width * global.scale / 2 : 0,
-        Y: assetsLoaded ? global.height / 2 - assets.hero[0].height * global.scale / 2 : 0,
+    const [charPosition, setCharPosition] = useState({
+        X: global.width / 2 - global.characterSize[0] * global.scale / 2,
+        Y: global.height / 2 - global.characterSize[1] * global.scale / 2,
         mapX: 800,
         mapY: 800,
         direction: 'right',
-    }
+    });
 
     const [charData, setCharData] = useState([]);
     const [combatData, setCombatData] = useState([]);
@@ -107,25 +143,19 @@ const Gamu = ({sendJsonMessage, lastJsonMessage}) => {
         })
     }, []);
 
-    useEffect(() => {
-        if(combat === true) {
-            console.log('azeazeazeaze');
-            combat = false;
-            requestAnimationFrame(play);
-        }
-    }, [charData.combat]);
-
     const loadCharFrame = (frame, context, npcList) => {
         let char = null;
         for(let i=0; i<assets.hero.length; i++) {
             // Check if the end of the string matches the target ending
-            if (assets.hero[i].src.endsWith(`${charPosition.direction}-${frame}.png`)) {
+            if (assets.hero[i].src.endsWith(`${charPosition?.direction}-${frame}.png`)) {
                 char = assets.hero[i];
                 break;
             }
         }
         if (isAttacking === false && keyCheck.movement === true && !charData.isInteracting) {
-            charPosition, collision = updateCharSpritePosition(char, keyCheck, charPosition, speed, global, map, npcList);
+            let newCharPosition = charPosition;
+            newCharPosition, collision = updateCharSpritePosition(char, keyCheck, charPosition, speed, global, map, npcList, setCharPosition);
+            setCharPosition(newCharPosition);
             sendJsonMessageThrottled.current(JSON.stringify({
                 type: 'character',
                 x: charPosition.mapX,
@@ -133,9 +163,10 @@ const Gamu = ({sendJsonMessage, lastJsonMessage}) => {
                 userID: userID,
             }))
         }
-        const height = char.height * global.scale;
-        const width = char.width * global.scale;
-        context.drawImage(char, charPosition.X, charPosition.Y, width, height);
+
+        const height = char?.height * global.scale;
+        const width = char?.width * global.scale;
+        context.drawImage(char, charPosition?.X, charPosition?.Y, width, height);
     }
 
     const animateChar = (context, npcList) => {
@@ -185,9 +216,12 @@ const Gamu = ({sendJsonMessage, lastJsonMessage}) => {
             ]
         ): null;
 
-        if(combat !== true) {
-            requestAnimationFrame(play);
+        if (lastMessage !== null && lastMessage.userID !== userID) {
+            console.log(lastMessage);
         }
+        // if(combat !== true) {
+        //     requestAnimationFrame(play);
+        // }
     };
     
     const drawNpcs = (context, npcList, global) => {
@@ -254,11 +288,13 @@ const Gamu = ({sendJsonMessage, lastJsonMessage}) => {
         }
     };
     
-    useEffect(() => {
-        if(assetsLoaded && mapLoaded && enemiesLoaded) {
-            play();
-        }
-    }, [assetsLoaded]);
+    useAnimationFrame(play);
+
+    // useEffect(() => {
+    //     if(assetsLoaded && mapLoaded && enemiesLoaded) {
+            
+    //     }
+    // }, [assetsLoaded]);
 
     //debug
     const [debug, setDebug] = useState(false);
@@ -267,12 +303,6 @@ const Gamu = ({sendJsonMessage, lastJsonMessage}) => {
     function toggleDebug() {
         setDebug(!debug);
     }
-
-    //Websocket
-
-    const userID = useMemo(() => Date.now().toString(36) + Math.random().toString(36).slice(2), []);
-    const THROTTLE = 500 //ms
-    const sendJsonMessageThrottled = useRef(throttle(sendJsonMessage, THROTTLE))
 
     return(
         <>

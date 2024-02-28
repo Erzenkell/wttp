@@ -1,7 +1,7 @@
 export const drawMap = (map, context, assets, charPosition, enemies, global) => {
     const tileScale = global.tileSize * global.scale;
-    const mapY = Math.floor(charPosition.mapX / tileScale);
-    const mapX = Math.floor(charPosition.mapY / tileScale);
+    const mapY = charPosition?.mapX ? Math.floor(charPosition.mapX / tileScale) : 800;
+    const mapX = charPosition?.mapY ? Math.floor(charPosition.mapY / tileScale) : 800;
     const left = Math.max(0, mapX - 9);
     const right = Math.min(map.content[0].length, mapX + 10);
     const top = Math.max(0, mapY - 12);
