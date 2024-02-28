@@ -45,12 +45,11 @@ function useAnimationFrame(callback) {
     return requestRef;
 }
 
-
 const Gamu = ({sendJsonMessage, lastJsonMessage}) => {
 
     //Websocket
     const userID = useMemo(() => Date.now().toString(36) + Math.random().toString(36).slice(2), []);
-    const THROTTLE = 500 //ms
+    const THROTTLE = 50 //ms
     const sendJsonMessageThrottled = useRef(throttle(sendJsonMessage, THROTTLE))
     const [lastMessage, setLastMessage] = useState(null);
     
@@ -217,7 +216,9 @@ const Gamu = ({sendJsonMessage, lastJsonMessage}) => {
         ): null;
 
         if (lastMessage !== null && lastMessage.userID !== userID) {
-            console.log(lastMessage);
+            if(charPosition.mapX - lastMessage.x < 12 * global.tileSize * global.scale && charPosition.mapY - lastMessage.y < 12 * global.tileSize * global.scale) {
+                context.drawImage(assets.hero[0], charPosition.X + charPosition.mapX - lastMessage.x, charPosition.Y + charPosition.mapY - lastMessage.y, 32, 42);
+            }
         }
         // if(combat !== true) {
         //     requestAnimationFrame(play);
